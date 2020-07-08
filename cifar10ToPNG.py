@@ -2,6 +2,7 @@ import pickle
 import os
 import numpy as np
 from PIL import Image
+
 def unpickle_bytes(file):
   with open(file, 'rb') as fo:
      dict = pickle.load(fo, encoding='bytes')
@@ -13,6 +14,10 @@ def unpickle_ascii(file):
   return dict
 
 def make_cifar10_png(cifar10_path = 'cifar-10-batches-py' , target_cifar10_path = 'cifar-10-batches-py'):
+  '''
+  cifar10_path : this is the unzipped file downloaded fron https://www.cs.toronto.edu/~kriz/cifar.html
+  target_cifar10_path : this is the path your png image dataset is gonna be saved there!!!
+  '''
   
   os.makedirs(os.path.join(cifar10_path,'train') , exist_ok=True)
   os.makedirs(os.path.join(cifar10_path,'test') , exist_ok=True)
