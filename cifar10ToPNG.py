@@ -1,28 +1,29 @@
 import pickle
 import os
 import numpy as np
-
-cifar10_path = 'cifar-10-batches-py' # extract content of downloaded 
-                                                            # file(from https://www.cs.toronto.edu/~kriz/cifar.html) in a path 
-os.mkdir(os.path.join(cifar10_path,'train'))
-os.mkdir(os.path.join(cifar10_path,'test'))
-
+from PIL import Image
 def unpickle_bytes(file):
-    with open(file, 'rb') as fo:
-        dict = pickle.load(fo, encoding='bytes')
-    return dict
+  with open(file, 'rb') as fo:
+     dict = pickle.load(fo, encoding='bytes')
+  return dict
 
 def unpickle_ascii(file):
-    with open(file, 'rb') as fo:
-        dict = pickle.load(fo, encoding='ASCII')
-    return dict
+  with open(file, 'rb') as fo:
+     dict = pickle.load(fo, encoding='ASCII')
+  return dict
 
-label_path = os.path.join(cifar10_path, 'batches.meta')
-label = unpickle_ascii(label_path)
+def make_cifar10_png(cifar10_path = 'cifar-10-batches-py' , target_cifar10_path = 'cifar-10-batches-py'):
+  
+  os.makedirs(os.path.join(cifar10_path,'train') , exist_ok=True)
+  os.makedirs(os.path.join(cifar10_path,'test') , exist_ok=True)
 
-for batch in ('test_batch' , 'data_batch_1' , 'data_batch_2' , 'data_batch_3' , 'data_batch_4' , 'data_batch_5'):
+  label_path = os.path.join(cifar10_path, 'batches.meta')
+  label = unpickle_ascii(label_path)
+
+  for batch in ('test_batch' , 'data_batch_1' , 'data_batch_2' , 'data_batch_3' , 'data_batch_4' , 'data_batch_5'):
     fpath = os.path.join(cifar10_path, batch)
     d = unpickle_bytes(fpath)
+    
     d_decoded = {}
     
     for k, v in d.items():
@@ -35,4 +36,4 @@ for batch in ('test_batch' , 'data_batch_1' , 'data_batch_2' , 'data_batch_3' , 
         img_vector = d['data'][i]
         img = img_vector.reshape((32, 32, 3), order='F').swapaxes(0,1)
         img = Image.fromarray(img , mode = "RGB")
-        img.save(os.path.join(folder,filename.decode())) 
+        img.save(os.path.join(target_cifar10_path,filename.decode())) 
