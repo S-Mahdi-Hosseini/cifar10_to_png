@@ -2,6 +2,7 @@ import pickle
 import os
 import numpy as np
 from PIL import Image
+from tqdm import tqdm
 
 def unpickle_bytes(file):
   with open(file, 'rb') as fo:
@@ -19,9 +20,6 @@ def make_cifar10_png(cifar10_path = 'cifar-10-batches-py' , target_cifar10_path 
   target_cifar10_path : this is the path your png image dataset is gonna be saved there!!!
   '''
   
-  os.makedirs(os.path.join(cifar10_path,'train') , exist_ok=True)
-  os.makedirs(os.path.join(cifar10_path,'test') , exist_ok=True)
-
   label_path = os.path.join(cifar10_path, 'batches.meta')
   label = unpickle_ascii(label_path)
 
@@ -35,10 +33,10 @@ def make_cifar10_png(cifar10_path = 'cifar-10-batches-py' , target_cifar10_path 
         d_decoded[k.decode('utf8')] = v
     d = d_decoded
     
-    for i , filename in enumerate(d['filenames']):
-        folder = os.path.join(cifar10_path , 'test' if batch=='test_batch' else 'train', label['label_names'][d['labels'][i]])
+    for i , filename in enumerate(tqdm(d['filenames'])):
+        folder = os.path.join(target_cifar10_path , 'test' if batch=='test_batch' else 'train', label['label_names'][d['labels'][i]])
         os.makedirs(folder, exist_ok=True)
         img_vector = d['data'][i]
         img = img_vector.reshape((32, 32, 3), order='F').swapaxes(0,1)
         img = Image.fromarray(img , mode = "RGB")
-        img.save(os.path.join(target_cifar10_path,filename.decode())) 
+        img.save(os.path.join(folder,filename.decode())) 
